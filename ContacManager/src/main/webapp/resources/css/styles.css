@@ -1,0 +1,40 @@
+body {
+	background: url(../images/background.jpg);
+}
+
+#header {
+	background: #AA8E69;
+	color: #fff;
+	height: 50px;
+}
+
+#content {
+	background: #fff;
+}
+
+
+.sidebar {
+	background: #472C09;
+	color: #fff;
+	margin: 0;
+	padding: 5px;
+}
+.contentformtable{
+	padding: 1px;
+}
+
+.table {
+	margin: 10px 0;
+}
+
+.table thead tr {
+	background: #472C09;
+	color: #fff;
+}
+
+#footer {
+	background: #AA8E69;
+	color: #fff;
+	height: 50px;
+}
+

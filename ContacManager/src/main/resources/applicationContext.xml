@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:aop="http://www.springframework.org/schema/aop"
+        xmlns:tx="http://www.springframework.org/schema/tx"
+        xmlns:p="http://www.springframework.org/schema/p"
+        xmlns:mvc="http://www.springframework.org/schema/mvc"
+        xmlns:context="http://www.springframework.org/schema/context"
+	   	xmlns:security="http://www.springframework.org/schema/security"
+	   
+        xsi:schemaLocation="http://www.springframework.org/schema/context 
+        					http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        					http://www.springframework.org/schema/beans 
+        					http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       						http://www.springframework.org/schema/tx 
+        					http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+        					http://www.springframework.org/schema/aop 
+        					http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+        					http://www.springframework.org/schema/mvc 
+        					http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
+        					http://www.springframework.org/schema/security
+            				http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+
+    <bean id="config" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:/config.properties</value>
+            </list>
+        </property>
+    </bean>
+    <context:component-scan base-package="com.radchenko.contact.components.impl"/>
+    <context:component-scan base-package="com.radchenko.contact.dao.impl.hibernate"/>
+    <context:component-scan base-package="com.radchenko.contact.services.impl"/>
+    <context:component-scan base-package="com.radchenko.contact.controllers"/>
+    
+    <mvc:resources mapping="/resources/**" location="/resources/**" />
+	<mvc:resources mapping="/favicon.ico" location="/favicon.ico" />
+	
+	<mvc:annotation-driven />
+	
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/JSP/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	
+	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basename" value="classpath:message" />
+        <property name="defaultEncoding" value="UTF-8" />
+    </bean>
+	
+	<bean id="dataSource" class="org.postgresql.jdbc2.optional.PoolingDataSource">
+        <property name="dataSourceName" value="htppl-ds" />
+        <property name="serverName" value="${db.serverName}" />
+        <property name="databaseName" value="${db.databaseName}" />
+        <property name="user" value="${db.username}" />
+        <property name="password" value="${db.password}" />
+        <property name="initialConnections" value="10" />
+        <property name="maxConnections" value="200" />
+    </bean>
+	
+    <bean name="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="configLocation" value="classpath:/hibernate.cfg.xml"/>
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+    
+    <!-- ======================================================================================= -->
+	<!-- =================   				Security settings    			==================== -->
+	<!-- ======================================================================================= -->
+	
+	<context:component-scan base-package="com.radchenko.contact.security"/>
+	
+    <security:http use-expressions="true" auto-config="true" >		
+		<security:intercept-url pattern="/login" 				access="permitAll" />
+		<security:intercept-url pattern="/loginFailed" 			access="permitAll" />
+		<security:intercept-url pattern="/error" 				access="permitAll" />
+		<!-- <security:intercept-url pattern="/logout"               access="permitAll" /> -->
+		<security:intercept-url pattern="/resources/**"	 		access="permitAll" />
+		<security:intercept-url pattern="/favicon.ico" 			access="permitAll" />
+		<security:intercept-url pattern="/index.jsp" 			access="permitAll" />
+		<security:intercept-url pattern="/myInfo" 				access="hasAnyRole('ADMIN','TUTOR')" />
+		<security:intercept-url pattern="/admin/**" 			access="hasRole('ADMIN')" />
+		<security:intercept-url pattern="/tutor/**" 			access="hasRole('TUTOR')" />
+		<security:form-login 
+				login-page="/login"
+				authentication-failure-url="/loginFailed" 
+				default-target-url="/myInfo"
+				login-processing-url="/loginHandler" />
+		<security:logout 
+		    	invalidate-session="false" 
+		    	delete-cookies="JSESSIONID"
+		    	logout-url="/logout" 
+		    	logout-success-url="/login" />
+		<security:remember-me key="testOnlineKey" token-repository-ref="tokenRepository" />
+		
+		<security:session-management session-fixation-protection="migrateSession" 
+								invalid-session-url="/invalidSession">
+			<security:concurrency-control 
+				max-sessions="1" 
+				expired-url="/sessionExpired" />
+		</security:session-management>
+		
+	</security:http>
+	
+	<!-- <bean id="simpleUrlAuthenticationSuccessHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler">
+    	<property name="defaultTargetUrl" value="/myInfo"/>
+    	<property name="targetUrlParameter" value="url"/>
+    	<property name="alwaysUseDefaultTargetUrl" value="false" />
+    	<property name="useReferer" value="true" />
+	</bean> -->
+
+	<!--security:authentication-manager>
+		<security:authentication-provider user-service-ref="accountAuthentificationService">
+			<security:password-encoder ref="pwdEncoder" />
+		</security:authentication-provider>
+	</security:authentication-manager-->
+	
+	<security:authentication-manager>
+		<security:authentication-provider ref="customAuthenticationProvider" />
+	</security:authentication-manager>
+	
+	<bean id="tokenRepository" class="org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+</beans>
