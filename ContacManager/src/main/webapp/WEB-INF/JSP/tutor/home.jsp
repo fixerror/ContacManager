@@ -15,9 +15,19 @@
 		<div class="span3 sidebar">
 			<h3 style="text-align: center;">Menu</h3>
 			<a href="${context}/logout"  class="btn btn-mini btn-danger btn-block">Exit</a>
+			<!-- Button to trigger modal  -->
+			<a href="#myModal" role="button" class="btn btn-mini btn-primary btn-block" data-toggle="modal">Create Contact</a>
 		</div>
-		<div class="span9 contentformtable" >
-			<form:form method="post" action="add.html" commandName="contact" class="form-horizontal">
+		<div class="span9 contentformtable">
+			<div class="modal hide fade" id="myModal"  data-backdrop="false" tabindex="-1" role="dialog"
+				aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">×</button>
+					<h3 id="myModalLabel">Create Contact</h3>
+				</div>
+				<div class="modal-body">
+			<form:form method="post" action="${context}/tutor/add" modelAttribute="contact" class="form-horizontal">
 				<form:label path="firstname"> <spring:message code="label.firstname" /></form:label>
 				<form:input type="text" placeholder="First Name" path="firstname" />
 				<form:label path="lastname"><spring:message code="label.lastname" /></form:label>
@@ -28,6 +38,9 @@
 				<form:input type="text" placeholder="Telephone" path="telephone" />
 				<input type="submit" class="btn btn-primary" value="<spring:message code="label.addcontact"/>">
 			</form:form>
+			</div>
+				<div class="modal-footer"></div>
+			</div>
 			<h3 style="text-align: center;">Contacts</h3>
 			<c:if test="${!empty contactList}">
 				<table class="table table-striped table-bordered table-hover">
@@ -62,93 +75,3 @@
 			</div>
 		</div>
 		</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<%-- <div class="container">
-	<div class="row">
-		<div class="col-md-12 form-block">
-			<h2>Contact Manager</h2>
-
-			<form:form method="post" action="add.html" commandName="contact"
-				class="form-horizontal">
-
-				<table>
-					<tr>
-						<td><form:label path="firstname">
-								<spring:message code="label.firstname" />
-							</form:label></td>
-						<td><form:input type="text" placeholder="First Name"
-								path="firstname" /></td>
-					</tr>
-					<tr>
-						<td><form:label path="lastname">
-								<spring:message code="label.lastname" />
-							</form:label></td>
-						<td><form:input type="text" placeholder="Last Name"
-								path="lastname" /></td>
-					</tr>
-					<tr>
-						<td><form:label class="control-label" for="inputEmail"
-								path="email">
-								<spring:message code="label.email" />
-							</form:label></td>
-						<td><form:input type="text" id="inputEmail"
-								placeholder="Email" path="email" /></td>
-					</tr>
-					<tr>
-						<td><form:label path="telephone">
-								<spring:message code="label.telephone" />
-							</form:label></td>
-						<td><form:input type="text" placeholder="Telephone"
-								path="telephone" /></td>
-					</tr>
-					<tr>
-						<td colspan="2"><input type="submit" class="btn btn-primary"
-							value="<spring:message code="label.addcontact"/>"></td>
-					</tr>
-				</table>
-			</form:form>
-		</div>
-		<div class="col-md-12 contacts-block">
-			<h3>Contacts</h3>
-			<c:if test="${!empty contactList}">
-				<table class="table table-bordered">
-					<tr>
-						<th>Name</th>
-						<th>Email</th>
-						<th>Telephone</th>
-						<th>&nbsp;</th>
-					</tr>
-					<c:forEach items="${contactList}" var="contact">
-						<tr>
-							<td>${contact.lastname},${contact.firstname}</td>
-							<td>${contact.email}</td>
-							<td>${contact.telephone}</td>
-							<td><a href="delete/${contact.id}" class="btn btn-danger"><i
-									class="icon-trash"> </i> delete</a></td>
-						</tr>
-					</c:forEach>
-				</table>
-			</c:if>
-		</div>
-	</div>
-</div> --%>
