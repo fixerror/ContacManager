@@ -21,7 +21,7 @@ import com.radchenko.contact.services.ContactService;
  */
 @Controller
 @RequestMapping("/tutor")
-public class TutorController {
+public class TutorController extends AbstractController {
 	
 	@Autowired
 	private ContactService contactService;
